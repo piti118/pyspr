@@ -14,6 +14,7 @@ from pyspr import SPR
 
 spr = SPR('test/cleveland.spr')
 print spr.varnames() #print variable names in the right order 
+#['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
 #i know it needs 13
 myvar = [0.5]*13
 print spr.response(myvar)
