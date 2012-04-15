@@ -1,15 +1,3 @@
-pyspr
------
-
-StatPatternRecognition python binding.
-
-Requirement
------------
-My version of SPR at https://github.com/piti118/SPR (just 1 method added at access the variable names)
-
-Example
--------
-```python
 from pyspr import SPR
 
 spr = SPR('test/cleveland.spr')
@@ -27,4 +15,3 @@ d ={'age':0.3, 'sex':1,
     'slope':1.0, 'ca':0.3, 
     'thal':0.6}
 print spr.response_dict(d)
-```
