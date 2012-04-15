@@ -1,0 +1,8 @@
+*.root
+.DS_Store
+*.so
+*.ipynb
+src/*.html
+build
+*.pyc
+test_*

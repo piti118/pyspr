@@ -1,0 +1,1 @@
+cython -a --fast-fail --cplus --fast-fail pyspr/_libpyspr.pyx
