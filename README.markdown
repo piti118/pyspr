@@ -5,7 +5,7 @@ StatPatternRecognition python binding.
 
 Requirement
 -----------
-My version of SPR at https://github.com/piti118/SPR (just 1 method added at access the variable names)
+My version of SPR at https://github.com/piti118/SPR (just 1 method added to access the variable names order)
 
 Example
 -------
