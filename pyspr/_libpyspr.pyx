@@ -1,5 +1,8 @@
 #include <SprClassifierReader.hh>
 #include <SprAbsTrainedClassifier.hh>
+import numpy as np
+cimport numpy as np
+
 cdef extern from "<string>" namespace "std":
     cdef cppclass string:
         char* c_str()
@@ -18,6 +21,7 @@ cdef extern from "<vector>" namespace "std":
         iterator begin()
         iterator end()
         int size()
+        void clear()
 
 cdef extern from "SprAbsTrainedClassifier.hh":
     cdef cppclass SprAbsTrainedClassifier:
@@ -60,6 +64,31 @@ cdef class SPR:
         for v in self.variables:
             vd.push_back(d[v])
         return self.classifier.response(vd)
+        
+    def response_kwd(self,**kwd):
+        cdef vector[double] vd
+        for v in self.variables:
+            vd.push_back(kwd[v])
+        return self.classifier.response(vd)
+            
+    #each element of dictionary is assumed to be 1d array
+    def vresponse_dict(self,**kwd):
+        cdef vector[double] tmp
+        cdef int idata
+        cdef int length
+        orderd = []
+        for v in self.variables:
+            orderd.push_back(kwd[v])
+        length = len(orderd[0])
+        for a in orderd:#make sure the length are all the same
+            assert(len(a)==length)
+        ret = np.zeros(length)
+        for idata in range(length):
+            tmp.clear()
+            for data in orderd:
+                tmp.push_back(data[idata])
+            ret[idata] = self.classifier.response(tmp)
+        return ret
     
     def response_attr(self,o):
         cdef vector[double] vd

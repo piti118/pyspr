@@ -1,7 +1,7 @@
 from distutils.core import setup, Extension
 import distutils.util
 import subprocess
-import numpy as np
+import numpy
 from os.path import isdir,exists
 import subprocess
 
@@ -44,7 +44,7 @@ root_inc,root_ldflags = find_root()
 
 libpyspr = Extension('pyspr._libpyspr',
                     sources = ['pyspr/_libpyspr.cpp'],
-                    include_dirs= [sprbase+'/include',sprbase,'pyspr'],
+                    include_dirs= [sprbase+'/include',sprbase,'pyspr',numpy.get_include()],
                     library_dirs=[sprlib],
                     libraries=['SPR'],
                     extra_link_args=[] + root_ldflags)
