@@ -122,9 +122,9 @@ cdef class SPR:
 cdef class SPRTransformer:
     cdef SprAbsVarTransformer* transformer
     
-    def init(self,f):
+    def __init__(self,f):
         cdef char* fname = f
-        transformer = ReadTransformer(fname)
+        self.transformer = ReadTransformer(fname)
     
     def transform(self,np.ndarray var):
         cdef vector[double] vi
@@ -137,7 +137,7 @@ cdef class SPRTransformer:
             tmp = <double> orgvar[i]
             vi.push_back(tmp)
         self.transformer.transform(vi,vo);
-        #TODO: make these unnecessary copying better
+        #TODO: make these unnecessary copying go away
         for i in range(mylen):
             ret[i] = vo[i]
         return ret
