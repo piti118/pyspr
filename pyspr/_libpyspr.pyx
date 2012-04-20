@@ -42,9 +42,10 @@ def float2double(a):
 
 cdef class SPR:
     cdef SprAbsTrainedClassifier* classifier
+    cdef SprAbsVarTransformer* transformer
     cdef int numvar
     cdef object variables
-    def __init__(self,fname):
+    def __init__(self,fname,transformer=None):
         cdef char* tmp
         cdef vector[string]* tmpvar
         cdef bytes tmpvarname
@@ -58,7 +59,19 @@ cdef class SPR:
             tmpvarname = tmpvar.at(i).c_str()
             self.variables.append(tmpvarname)
         self.numvar = tmpvar.size()
+        if transformer is None:
+            self.transformer=NULL
+        else:
+            self.transformer = ReadTransformer(transformer)
         del tmpvar
+
+    cdef double compute_response(self,vector[double] vd):
+        cdef vector[double] tv
+        if self.transformer !=NULL:
+            self.transformer.transform(vd,tv)
+            return self.classifier.response(tv)
+        else:
+            return self.classifier.response(vd)
     
     def response(self,v):
         if len(v) != self.numvar:
@@ -66,19 +79,19 @@ cdef class SPR:
         cdef vector[double] vd
         for x in v:
             vd.push_back(x)
-        return self.classifier.response(vd)
+        return self.compute_response(vd)
     
     def response_dict(self,d):
         cdef vector[double] vd
         for v in self.variables:
             vd.push_back(d[v])
-        return self.classifier.response(vd)
+        return self.compute_response(vd)
         
     def response_kwd(self,**kwd):
         cdef vector[double] vd
         for v in self.variables:
             vd.push_back(kwd[v])
-        return self.classifier.response(vd)
+        return self.compute_response(vd)
         
     #each element of dictionary is assumed to be 1d array
     def vresponse(self,rec,**kwd):
@@ -104,14 +117,14 @@ cdef class SPR:
             for i in range(numvar):
                 dtmp = (<double*>np.PyArray_GETPTR1(orderd[i],idata))[0] #hack to help cython emit smart code
                 tmp.push_back(dtmp)
-            ret[idata] = self.classifier.response(tmp)
+            ret[idata] = self.compute_response(tmp)
         return ret
     
     def response_attr(self,o):
         cdef vector[double] vd
         for v in self.variables:
             vd.push_back(getattr(o,v))
-        return self.classifier.response(vd) 
+        return self.compute_response(vd)
     
     def varnames(self):
         return self.variables
@@ -122,7 +135,7 @@ cdef class SPR:
 cdef class SPRTransformer:
     cdef SprAbsVarTransformer* transformer
     
-    def __init__(self,f):
+    def __init__(self,f=None):
         cdef char* fname = f
         self.transformer = ReadTransformer(fname)
     
