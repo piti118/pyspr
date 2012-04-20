@@ -1,5 +1,3 @@
-#include <SprClassifierReader.hh>
-#include <SprAbsTrainedClassifier.hh>
 import numpy as np
 cimport numpy as np
 
