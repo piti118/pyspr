@@ -132,7 +132,7 @@ cdef class SPRTransformer:
         cdef vector[double] vo
         cdef np.ndarray[np.double_t] orgvar = float2double(var)
         cdef double tmp
-        cdef np.ndarray[np.double_t] ret = np.zeros[mylen]
+        cdef np.ndarray[np.double_t] ret = np.zeros(mylen)
         for i in range(mylen):
             tmp = <double> orgvar[i]
             vi.push_back(tmp)
