@@ -79,9 +79,9 @@ cdef class SPR:
         orderd = []
         for v in self.variables:
             if v in kwd:
-                orderd.push_back(kwd[v])
+                orderd.append(kwd[v])
             else:
-                orderd.push_back(rec[v])
+                orderd.append(rec[v])
         length = len(orderd[0])
         for a in orderd:#make sure the length are all the same
             assert(len(a)==length)
