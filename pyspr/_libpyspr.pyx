@@ -26,8 +26,19 @@ cdef extern from "SprAbsTrainedClassifier.hh":
         vector[string]* getVars()
         double response(vector[double] v) 
 
+cdef extern from "SprAbsVarTransformer.hh":
+    cdef cppclass SprAbsVarTransformer:
+        void transform(vector[double] vin,vector[double] vout)
+
 cdef extern from "static.h":
     SprAbsTrainedClassifier* ReadClassifier(char* f)
+    SprAbsVarTransformer* ReadTransformer(char* filename)
+
+def float2double(a):
+    if a is None or a.dtype == np.float64:
+        return a
+    else:
+        return a.astype(np.float64)
 
 cdef class SPR:
     cdef SprAbsTrainedClassifier* classifier
@@ -74,20 +85,25 @@ cdef class SPR:
         cdef vector[double] tmp
         cdef int idata
         cdef int length
+        cdef double dtmp
+        cdef int numvar =0
+        cdef np.ndarray[np.double_t] ret
         orderd = []
+        #is there a way to work around passing in float array without copying and have it emit the right code?
         for v in self.variables:
             if v in kwd:
-                orderd.append(kwd[v])
+                orderd.append(float2double(kwd[v]))
             else:
-                orderd.append(rec[v])
+                orderd.append(float2double(rec[v]))
         length = len(orderd[0])
-        for a in orderd:#make sure the length are all the same
-            assert(len(a)==length)
+        
         ret = np.zeros(length)
+        numvar = len(orderd)
         for idata in range(length):
             tmp.clear()
-            for data in orderd:
-                tmp.push_back(data[idata])
+            for i in range(numvar):
+                dtmp = (<double*>np.PyArray_GETPTR1(orderd[i],idata))[0] #hack to help cython emit smart code
+                tmp.push_back(dtmp)
             ret[idata] = self.classifier.response(tmp)
         return ret
     
@@ -102,3 +118,32 @@ cdef class SPR:
     
     def __del__(self):
         del self.classifier
+
+cdef class SPRTransformer:
+    cdef SprAbsVarTransformer* transformer
+    
+    def init(self,f):
+        cdef char* fname = f
+        transformer = ReadTransformer(fname)
+    
+    def transform(self,np.ndarray var):
+        cdef vector[double] vi
+        cdef int mylen = len(var)
+        cdef vector[double] vo
+        cdef np.ndarray[np.double_t] orgvar = float2double(var)
+        cdef double tmp
+        cdef np.ndarray[np.double_t] ret = np.zeros[mylen]
+        for i in range(mylen):
+            tmp = <double> orgvar[i]
+            vi.push_back(tmp)
+        self.transformer.transform(vi,vo);
+        #TODO: make these unnecessary copying better
+        for i in range(mylen):
+            ret[i] = vo[i]
+        return ret
+    
+    def __del__(self):
+        del self.transformer
+
+        
+        
