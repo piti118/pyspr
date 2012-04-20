@@ -11,7 +11,7 @@ Example
 -------
 ```python
 from pyspr import SPR
-
+import numpy as np
 spr = SPR('test/cleveland.spr')
 print spr.varnames() #print variable names in the right order 
 #['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
@@ -28,4 +28,8 @@ d ={'age':0.3, 'sex':1,
     'slope':1.0, 'ca':0.3, 
     'thal':0.6}
 print spr.response_dict(d)
+#vectorize response for recarray is also available with
+#spr.vresponse(rec)
+#and override column in recarray with keyword arguemnt like this
+#spr.vresponse(rec,fbs=numpy_array_with_correct_len)
 ```
