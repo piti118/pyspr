@@ -70,34 +70,18 @@ cdef class SPR:
         for v in self.variables:
             vd.push_back(kwd[v])
         return self.classifier.response(vd)
-            
+        
     #each element of dictionary is assumed to be 1d array
-    def vresponse_kwd(self,**kwd):
+    def vresponse(self,rec,**kwd):
         cdef vector[double] tmp
         cdef int idata
         cdef int length
         orderd = []
         for v in self.variables:
-            orderd.push_back(kwd[v])
-        length = len(orderd[0])
-        for a in orderd:#make sure the length are all the same
-            assert(len(a)==length)
-        ret = np.zeros(length)
-        for idata in range(length):
-            tmp.clear()
-            for data in orderd:
-                tmp.push_back(data[idata])
-            ret[idata] = self.classifier.response(tmp)
-        return ret
-    
-    #each element of dictionary is assumed to be 1d array
-    def vresponse_rec(self,rec):
-        cdef vector[double] tmp
-        cdef int idata
-        cdef int length
-        orderd = []
-        for v in self.variables:
-            orderd.push_back(rec[v])
+            if v in kwd:
+                orderd.push_back(kwd[v])
+            else:
+                orderd.push_back(rec[v])
         length = len(orderd[0])
         for a in orderd:#make sure the length are all the same
             assert(len(a)==length)
