@@ -1,1 +1,1 @@
-from ._libpyspr import *
+from _libpyspr import *
