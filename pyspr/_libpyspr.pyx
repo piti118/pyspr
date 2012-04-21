@@ -131,6 +131,8 @@ cdef class SPR:
     
     def __del__(self):
         del self.classifier
+        del self.transformer
+
 
 cdef class SPRTransformer:
     cdef SprAbsVarTransformer* transformer
