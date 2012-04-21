@@ -5,6 +5,8 @@ import numpy
 from os.path import isdir,exists
 import subprocess
 
+print 'Numpy version: ', numpy.version.full_version
+
 def find_sprbase():
     #TODO: implement this properly
     findlist = ['/usr/local/src/statpatrec']
